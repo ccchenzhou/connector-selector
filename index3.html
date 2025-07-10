@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMC快换接头选型程序</title>
+    <style>
+        /* 基础样式 */
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #3b82f6;
+            --accent-color: #10b981;
+            --text-color: #1f2937;
+            --light-bg: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f3f4f6;
+        }
+
+        /* 头部样式 */
+        header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        header img {
+            max-width: 120px;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* 主体内容 */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            margin-bottom: 2rem;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* 选项组样式 */
+        .option-group {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .option-group:hover {
+            border-color: var(--secondary-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .option-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .option-group select,
+        .option-group input[type="radio"],
+        .option-group input[type="checkbox"] {
+            margin-bottom: 0.75rem;
+        }
+
+        .option-group select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .option-group select:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .option-group input[type="radio"],
+        .option-group input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        /* 按钮样式 */
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 2rem auto 1rem;
+            width: 180px;
+        }
+
+        button:hover {
+            background-color: #059669;
+        }
+
+        /* 结果区域 */
+        #resultArea {
+            background-color: var(--light-bg);
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .model-code {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: block;
+            text-align: center;
+            margin: 1rem 0;
+            background-color: rgba(59, 130, 246, 0.1);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--secondary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        table th,
+        table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        /* 注意事项 */
+        .notes ol,
+        .notes ul {
+            padding-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .notes li {
+            margin-bottom: 0.5rem;
+        }
+
+        .error {
+            color: var(--error-color);
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+
+        /* 页脚样式 */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .model-code {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* 图片选择器样式 */
+        .connector-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .connector-item {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .connector-item:hover {
+            border-color: var(--secondary-color);
+            background-color: var(--light-bg);
+        }
+
+        .connector-item.selected {
+            border-color: var(--accent-color);
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+
+        .connector-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 只读样式 */
+        .readonly {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .readonly input[type="radio"] {
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <img src="image/SMClogo.png" alt="SMC公司标志">
+        <h1>SMC快换接头选型程序</h1>
+        <img src="image/程序主图.png" alt="接头选型程序主图" style="max-width: 80%; margin-top: 1rem;">
+    </header>
+    <main>
+        <section class="card">
+            <div class="card-header">选型功能区</div>
+            <div class="card-body">
+                <!-- 移除了基本参数选项组 -->
+
+                <div class="option-group">
+                    <label>接头种类</label>
+                    <div class="connector-images" id="connectorImages">
+                        <!-- 接管连接专用接头 -->
+                        <div class="connector-item" data-value="H">
+                            <img src="connectors/H.png" alt="直通接管">
+                            <span>直通接管 (H)</span>
+                        </div>
+                        <div class="connector-item" data-value="H2">
+                            <img src="connectors/H2.png" alt="异径直通接管">
+                            <span>异径直通接管 (H)</span>
+                        </div>
+                        <div class="connector-item" data-value="L">
+                            <img src="connectors/L.png" alt="接管弯头">
+                            <span>接管弯头 (L)</span>
+                        </div>
+                        <div class="connector-item" data-value="L2">
+                            <img src="connectors/L2.png" alt="插管弯管">
+                            <span>插管弯管 (L)</span>
+                        </div>
+                        <div class="connector-item" data-value="L3">
+                            <img src="connectors/L3.png" alt="插管减径弯管">
+                            <span>插管减径弯管 (L)</span>
+                        </div>
+                        <div class="connector-item" data-value="LU">
+                            <img src="connectors/LU.png" alt="双管弯头">
+                            <span>双管弯头 (LU)</span>
+                        </div>
+                        <div class="connector-item" data-value="W">
+                            <img src="connectors/W.png" alt="长插管弯管">
+                            <span>长插管弯管 (W)</span>
+                        </div>
+                        <div class="connector-item" data-value="T">
+                            <img src="connectors/T.png" alt="T形接管">
+                            <span>T形接管 (T)</span>
+                        </div>
+                        <div class="connector-item" data-value="T2">
+                            <img src="connectors/T2.png" alt="异径T形接管">
+                            <span>异径T形接管 (T)</span>
+                        </div>
+                        <div class="connector-item" data-value="TW">
+                            <img src="connectors/TW.png" alt="十字形接管">
+                            <span>十字形接管 (TW)</span>
+                        </div>
+                        <div class="connector-item" data-value="TX">
+                            <img src="connectors/TX.png" alt="异径十字形接管">
+                            <span>异径十字形接管 (TX)</span>
+                        </div>
+                        <div class="connector-item" data-value="TY">
+                            <img src="connectors/TY.png" alt="异径十字形接管">
+                            <span>异径十字形接管 (TY)</span>
+                        </div>
+                        <div class="connector-item" data-value="D">
+                            <img src="connectors/D.png" alt="两管垂直接管">
+                            <span>两管垂直接管 (D)</span>
+                        </div>
+                        <div class="connector-item" data-value="U">
+                            <img src="connectors/U.png" alt="Y形接管">
+                            <span>Y形接管 (U)</span>
+                        </div>
+                        <div class="connector-item" data-value="U2">
+                            <img src="connectors/U2.png" alt="插管Y形接管">
+                            <span>插管Y形接管 (U)</span>
+                        </div>
+                        <div class="connector-item" data-value="U3">
+                            <img src="connectors/U3.png" alt="异径Y形接管">
+                            <span>异径Y形接管 (U)</span>
+                        </div>
+                        <div class="connector-item" data-value="UD">
+                            <img src="connectors/UD.png" alt="异径四管Y形接管">
+                            <span>异径四管Y形接管 (UD)</span>
+                        </div>
+                        <div class="connector-item" data-value="X">
+                            <img src="connectors/X.png" alt="插管异径Y形接管">
+                            <span>插管异径Y形接管 (X)</span>
+                        </div>
+                        <div class="connector-item" data-value="R">
+                            <img src="connectors/R.png" alt="插管减径接管">
+                            <span>插管减径接管 (R)</span>
+                        </div>
+                        <div class="connector-item" data-value="XD">
+                            <img src="connectors/XD.png" alt="插管四管Y形接管">
+                            <span>插管四管Y形接管 (XD)</span>
+                        </div>
+
+                        <!-- 原螺纹连接专用接头，现在改为通用 -->
+                        <div class="connector-item" data-value="H3">
+                            <img src="connectors/H3.png" alt="直通接头">
+                            <span>直通接头 (H)</span>
+                        </div>
+                        <div class="connector-item" data-value="L4">
+                            <img src="connectors/L4.png" alt="弯头">
+                            <span>弯头 (L)</span>
+                        </div>
+                        <div class="connector-item" data-value="LU2">
+                            <img src="connectors/LU2.png" alt="双管弯头">
+                            <span>双管弯头 (LU)</span>
+                        </div>
+                        <div class="connector-item" data-value="LF">
+                            <img src="connectors/LF.png" alt="内螺纹弯头">
+                            <span>内螺纹弯头 (LF)</span>
+                        </div>
+                        <div class="connector-item" data-value="Z">
+                            <img src="connectors/Z.png" alt="双管万向弯头">
+                            <span>双管万向弯头 (Z)</span>
+                        </div>
+                        <div class="connector-item" data-value="ZF">
+                            <img src="connectors/ZF.png" alt="带内外螺纹的双管万向弯头">
+                            <span>带内外螺纹的双管万向弯头 (ZF)</span>
+                        </div>
+                        <div class="connector-item" data-value="ZD">
+                            <img src="connectors/ZD.png" alt="两个双管万向弯头">
+                            <span>两个双管万向弯头 (ZD)</span>
+                        </div>
+                        <div class="connector-item" data-value="ZT">
+                            <img src="connectors/ZT.png" alt="三个双管万向弯头">
+                            <span>三个双管万向弯头 (ZT)</span>
+                        </div>
+                        <div class="connector-item" data-value="T3">
+                            <img src="connectors/T3.png" alt="双冠T形接头">
+                            <span>双管T形接头 (T)</span>
+                        </div>
+                        <div class="connector-item" data-value="D2">
+                            <img src="connectors/D2.png" alt="两管垂直接头">
+                            <span>两管垂直接头 (D)</span>
+                        </div>
+                        <div class="connector-item" data-value="U4">
+                            <img src="connectors/U4.png" alt="Y形接头">
+                            <span>Y形接头 (U)</span>
+                        </div>
+                        <div class="connector-item" data-value="UD2">
+                            <img src="connectors/UD2.png" alt="Y形接头四管">
+                            <span>Y形接头四管 (UD)</span>
+                        </div>
+
+                        <!-- 通用接头 -->
+                        <div class="connector-item" data-value="S">
+                            <img src="connectors/S.png" alt="带内六角直通接头">
+                            <span>带内六角直通接头 (S)</span>
+                        </div>
+                        <div class="connector-item" data-value="F">
+                            <img src="connectors/F.png" alt="内螺纹直通接头">
+                            <span>内螺纹直通接头 (F)</span>
+                        </div>
+                        <div class="connector-item" data-value="K">
+                            <img src="connectors/K.png" alt="45°弯头">
+                            <span>45°弯头 (K)</span>
+                        </div>
+                        <div class="connector-item" data-value="V">
+                            <img src="connectors/V.png" alt="万向弯头">
+                            <span>万向弯头 (V)</span>
+                        </div>
+                        <div class="connector-item" data-value="VS">
+                            <img src="connectors/VS.png" alt="带内外螺纹的万向接头">
+                            <span>带内外螺纹的万向接头 (VS)</span>
+                        </div>
+                        <div class="connector-item" data-value="VF">
+                            <img src="connectors/VF.png" alt="内螺纹弯头">
+                            <span>内螺纹弯头 (VF)</span>
+                        </div>
+                        <div class="connector-item" data-value="VD">
+                            <img src="connectors/VD.png" alt="两个单管万向弯头">
+                            <span>两个单管万向弯头 (VD)</span>
+                        </div>
+                        <div class="connector-item" data-value="VT">
+                            <img src="connectors/VT.png" alt="三个单管万向弯头">
+                            <span>三个单管万向弯头 (VT)</span>
+                        </div>
+                        <div class="connector-item" data-value="W2">
+                            <img src="connectors/W2.png" alt="加长弯头">
+                            <span>加长弯头 (W)</span>
+                        </div>
+                        <div class="connector-item" data-value="Y">
+                            <img src="connectors/Y.png" alt="辅助用T形接头">
+                            <span>辅助用T形接头 (Y)</span>
+                        </div>
+                        <div class="connector-item" data-value="LE">
+                            <img src="connectors/LE.png" alt="面板安装弯管">
+                            <span>面板安装弯管 (LE)</span>
+                        </div>
+                        <div class="connector-item" data-value="N">
+                            <img src="connectors/N.png" alt="插管接头">
+                            <span>插管接头 (N)</span>
+                        </div>
+                        <div class="connector-item" data-value="E">
+                            <img src="connectors/E.png" alt="面板安装直通接管">
+                            <span>面板安装直通接管 (E)</span>
+                        </div>
+                        <div class="connector-item" data-value="E2">
+                            <img src="connectors/E2.png" alt="面板安装内螺纹直通接管">
+                            <span>面板安装内螺纹直通接管 (E)</span>
+                        </div>
+                    </div>
+                    <!-- 隐藏的输入框，用于存储选中的接头类型值 -->
+                    <input type="hidden" id="connectorType" value="">
+                </div>
+
+                <div class="option-group">
+                    <label for="tubeSize">适合管子外径</label>
+                    <select id="tubeSize">
+                        <option value="">--请选择--</option>
+                        <option value="2">Φ2 (02)</option>
+                        <option value="3.2">Φ3.2 (23)</option>
+                        <option value="4">Φ4 (04)</option>
+                        <option value="6">Φ6 (06)</option>
+                        <option value="8">Φ8 (08)</option>
+                        <option value="10">Φ10 (10)</option>
+                        <option value="12">Φ12 (12)</option>
+                        <option value="16">Φ16 (16)</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label>连接方式</label>
+                    <div id="connectionTypeOptions">
+                        <label>
+                            <input type="radio" name="connectionType" value="tube" checked> 接管连接
+                        </label>
+                        <label>
+                            <input type="radio" name="connectionType" value="thread"> 螺纹连接
+                        </label>
+                    </div>
+
+                    <div id="connectionParams" style="margin-top: 10px;">
+                        <div id="tubeConnection" style="display:block;">
+                            <label for="tubeConnectionSize">接管口径</label>
+                            <select id="tubeConnectionSize">
+                                <option value="">--请选择--</option>
+                                <option value="00">同径管 (00)</option>
+                                <option value="99">同径插杆 (99)</option>
+                                <option value="23">ø3.2 (23)</option>
+                                <option value="04">ø4 (04)</option>
+                                <option value="06">ø6 (06)</option>
+                                <option value="08">ø8 (08)</option>
+                                <option value="10">ø10 (10)</option>
+                                <option value="12">ø12 (12)</option>
+                                <option value="16">ø16 (16)</option>
+                            </select>
+                        </div>
+
+                        <div id="threadConnection" style="display:none;">
+                            <label for="threadSpec">螺纹规格</label>
+                            <select id="threadSpec">
+                                <option value="">--请选择--</option>
+                                <option value="M3">M3x0.5 (M3)</option>
+                                <option value="M5">M5x0.8 (M5)</option>
+                                <option value="M6">M6x1.0 (M6)</option>
+                                <option value="01">R1/8、Rc1/8 (01)</option>
+                                <option value="02">R1/4、Rc1/4 (02)</option>
+                                <option value="03">R3/8、Rc3/8 (03)</option>
+                                <option value="04">R1/2、Rc1/2 (04)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>螺纹部材质/表面处理</label>
+                    <div id="materialOptions">
+                        <label>
+                            <input type="radio" name="material" value="A" checked> 黄铜(无电镀) (A)
+                        </label>
+                        <label>
+                            <input type="radio" name="material" value="N"> 黄铜＋无电解镀镍 (N)
+                        </label>
+                        <label>
+                            <input type="radio" name="material" value="G"> SUS303(仅限于连接螺纹/外螺纹、M3) (G)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>外螺纹密封方式</label>
+                    <label>
+                        <input type="radio" name="sealType" value ="" checked> 无密封剂
+                    </label>
+                    <label>
+                        <input type="radio" name="sealType" value="S"> 带密封剂 (S)
+                    </label>
+                </div>
+
+                <button onclick="selectConnector()">开始选型</button>
+                <div id="resultArea">
+                    <h3>选型结果</h3>
+                    <p>请完成所有选型参数后点击"开始选型"按钮</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">使用注意事项</div>
+            <div class="card-body notes">
+                <ol>
+                    <li>利用本软件选定的产品及计算结果可能与实际情况不同。</li>
+                    <li>使用本软件收录的产品之前，请务必详细阅读该产品样本上记载的【安全注意事项】、【通用注意事项】、【产品个别注意事项】以及【产品规格】。</li>
+                    <li>SMC可能在不通知的情况下对本软件的内容及收录产品的规格进行变更。</li>
+                    <li>对于客户，SMC对使用本软件选出的产品、计算结果的正确性、软件的品质不作任何保证。</li>
+                    <li>使用本软件造成的损失，SMC不负任何责任。</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">浏览器要求</div>
+            <div class="card-body notes">
+                <ul>
+                    <li>Google Chrome 90.0 以上</li>
+                    <li>Microsoft Edge 91 以上</li>
+                    <li>Safari 14.0 以上</li>
+                    <li>Mozilla Firefox 89.0 以上</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 SMC Corporation. 保留所有权利。</p>
+    </footer>
+
+    <script>
+        // 接管连接专用的接头种类代码
+        const tubeOnlyTypes = ['H', 'H2', 'L', 'L2', 'L3', 'LU', 'W', 'T', 'T2', 'TW', 'TX', 'TY', 'D', 'U', 'U2', 'U3', 'UD', 'X', 'R', 'XD'];
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            // 初始化连接方式切换
+            document.querySelectorAll('input[name="connectionType"]').forEach(radio => {
+                radio.addEventListener('change', toggleConnectionType);
+            });
+
+            // 初始化螺纹规格和材质联动
+            document.getElementById('threadSpec').addEventListener('change', toggleMaterialOptions);
+            document.querySelectorAll('input[name="material"]').forEach(radio => {
+                radio.addEventListener('change', validateMaterialSelection);
+            });
+
+            // 初始化接头图片选择
+            document.querySelectorAll('.connector-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    // 移除所有已选状态
+                    document.querySelectorAll('.connector-item').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+
+                    // 添加当前选中状态
+                    this.classList.add('selected');
+
+                    // 更新隐藏输入框的值
+                    document.getElementById('connectorType').value = this.getAttribute('data-value');
+
+                    // 根据接头类型更新连接方式选项
+                    updateConnectionTypeOptions(this.getAttribute('data-value'));
+                });
+            });
+        });
+
+        // 根据接头类型更新连接方式选项
+        function updateConnectionTypeOptions(connectorType) {
+            const connectionTypeOptions = document.getElementById('connectionTypeOptions');
+            const tubeRadio = document.querySelector('input[name="connectionType"][value="tube"]');
+            const threadRadio = document.querySelector('input[name="connectionType"][value="thread"]');
+
+            // 如果是接管连接专用接头
+            if (tubeOnlyTypes.includes(connectorType)) {
+                // 禁用螺纹连接选项
+                threadRadio.disabled = true;
+                threadRadio.checked = false;
+                tubeRadio.checked = true;
+
+                // 添加只读样式
+                connectionTypeOptions.classList.add('readonly');
+
+                // 隐藏螺纹连接参数
+                document.getElementById('threadConnection').style.display = 'none';
+                document.getElementById('tubeConnection').style.display = 'block';
+            } else {
+                // 对于通用接头，启用所有连接方式选项
+                tubeRadio.disabled = false;
+                threadRadio.disabled = false;
+                connectionTypeOptions.classList.remove('readonly');
+            }
+        }
+
+        // 切换连接方式显示
+        function toggleConnectionType() {
+            const connectionType = document.querySelector('input[name="connectionType"]:checked').value;
+
+            if (connectionType === 'tube') {
+                document.getElementById('tubeConnection').style.display = 'block';
+                document.getElementById('threadConnection').style.display = 'none';
+            } else {
+                document.getElementById('tubeConnection').style.display = 'none';
+                document.getElementById('threadConnection').style.display = 'block';
+            }
+
+            // 每次切换连接方式时验证材质选择
+            validateMaterialSelection();
+        }
+
+        // 切换材质选项可见性
+        function toggleMaterialOptions() {
+            const threadSpec = document.getElementById('threadSpec').value;
+            const materialGOption = document.querySelector('input[name="material"][value="G"]').parentElement;
+
+            if (threadSpec === 'M3') {
+                // 只有当选择M3螺纹时才显示SUS303选项
+                materialGOption.style.display = 'inline-block';
+            } else {
+                // 其他情况隐藏SUS303选项
+                materialGOption.style.display = 'none';
+
+                // 如果当前选中了G，切换到默认选项A
+                if (document.querySelector('input[name="material"]:checked').value === 'G') {
+                    document.querySelector('input[name="material"][value="A"]').checked = true;
+                }
+            }
+        }
+
+        // 验证材质选择
+        function validateMaterialSelection() {
+            const connectionType = document.querySelector('input[name="connectionType"]:checked').value;
+            const threadSpec = document.getElementById('threadSpec').value;
+            const selectedMaterial = document.querySelector('input[name="material"]:checked').value;
+
+            // 如果是螺纹连接且选择了M3以外的规格，确保没有选择G材质
+            if (connectionType === 'thread' && threadSpec !== 'M3' && selectedMaterial === 'G') {
+                document.querySelector('input[name="material"][value="A"]').checked = true;
+            }
+        }
+
+        // 开始选型
+        function selectConnector() {
+            // 获取所有选项值
+            const connectorType = document.getElementById('connectorType').value;
+            const tubeSize = document.getElementById('tubeSize').value;
+            const connectionType = document.querySelector('input[name="connectionType"]:checked').value;
+            let connectionCode = '';
+
+            if (connectionType === 'tube') {
+                connectionCode = document.getElementById('tubeConnectionSize').value;
+            } else {
+                connectionCode = document.getElementById('threadSpec').value;
+            }
+
+            const material = document.querySelector('input[name="material"]:checked').value;
+            const sealType = document.querySelector('input[name="sealType"]:checked').value;
+
+            // 验证必填项
+            if (!connectorType || !tubeSize ||
+                (connectionType === 'tube' && !connectionCode) ||
+                (connectionType === 'thread' && !connectionCode) ||
+                !material) {
+                document.getElementById('resultArea').innerHTML = `
+                    <h3>选型结果</h3>
+                    <p class="error">请完成所有必填选项后再进行选型</p>
+                `;
+                return;
+            }
+
+            // 获取管子外径尺寸代码
+            const tubeSizeCodeMap = {
+                '2': '02',
+                '3.2': '23',
+                '4': '04',
+                '6': '06',
+                '8': '08',
+                '10': '10',
+                '12': '12',
+                '16': '16'
+            };
+            const tubeSizeCode = tubeSizeCodeMap[tubeSize];
+
+            // 构建选型结果
+            const tubeDisplay = `Φ${tubeSize} (代码: ${tubeSizeCode})`;
+            const threadDisplay = connectionType === 'thread'
+                ? document.getElementById('threadSpec').options[document.getElementById('threadSpec').selectedIndex].text
+                : document.getElementById('tubeConnectionSize').options[document.getElementById('tubeConnectionSize').selectedIndex].text;
+
+            // 获取材质名称
+            const materialNames = {
+                'A': '黄铜(无电镀)',
+                'N': '黄铜＋无电解镀镍',
+                'G': 'SUS303(仅限于连接螺纹/外螺纹、M3)'
+            };
+            const materialName = materialNames[material] || material;
+
+            // 获取密封方式名称
+            const sealTypeNames = {
+                '': '无密封剂',
+                'S': '带密封剂'
+            };
+            const sealTypeName = sealTypeNames[sealType] || sealType;
+
+            // 处理特殊的接头种类代码 - 移除数字后缀
+            let actualConnectorType = connectorType.replace(/\d+$/, '');
+
+            // 获取接头种类名称
+            const connectorTypeNames = {
+                'H': '直通接管',
+                'H2': '异径直通接管',
+                'H3': '直通接头',
+                'L': '接管弯头',
+                'L2': '插管弯管',
+                'L3': '插管减径弯管',
+                'L4': '弯头',
+                'LU': '双管弯头',
+                'LU2': '双管弯头',
+                'W': '长插管弯管',
+                'W2': '加长弯头',
+                'T': 'T形接管',
+                'T2': '异径T形接管',
+                'T3': '双管T形接头',
+                'TW': '十字形接管',
+                'TX': '异径十字形接管',
+                'TY': '异径十字形接管',
+                'D': '两管垂直接管',
+                'D2': '两管垂直接头',
+                'U': 'Y形接管',
+                'U2': '插管Y形接管',
+                'U3': '异径Y形接管',
+                'U4': 'Y形接头',
+                'UD': '异径四管Y形接管',
+                'UD2': 'Y形接头四管',
+                'X': '插管异径Y形接管',
+                'R': '插管减径接管',
+                'XD': '插管四管Y形接管',
+                'S': '带内六角直通接头',
+                'F': '内螺纹直通接头',
+                'K': '45°弯头',
+                'V': '万向弯头',
+                'VS': '带内外螺纹的万向接头',
+                'VF': '内螺纹弯头',
+                'VD': '两个单管万向弯头',
+                'VT': '三个单管万向弯头',
+                'Z': '双管万向弯头',
+                'ZF': '带内外螺纹的双管万向弯头',
+                'ZD': '两个双管万向弯头',
+                'ZT': '三个双管万向弯头',
+                'Y': '辅助用T形接头',
+                'LE': '面板安装弯管',
+                'N': '插管接头',
+                'E': '面板安装直通接管',
+                'E2': '面板安装内螺纹直通接管',
+                'LF': '内螺纹弯头'
+            };
+            const connectorTypeName = connectorTypeNames[connectorType] || connectorType;
+
+            // 根据选择生成KQ2型号代码
+            const modelCode = generateModelCode(actualConnectorType, tubeSizeCode, connectionCode, material, sealType);
+
+            // 显示选型结果
+            document.getElementById('resultArea').innerHTML = `
+                <h3>选型结果</h3>
+                <div class="model-code">推荐型号: KQ2${modelCode}</div>
+                <table>
+                    <tr><th>参数</th><th>选择</th></tr>
+                    <tr><td>接头种类</td><td>${connectorTypeName}</td></tr>
+                    <tr><td>适合管子外径</td><td>${tubeDisplay}</td></tr>
+                    <tr><td>连接方式</td><td>${connectionType === 'tube' ? '接管连接' : '螺纹连接'}</td></tr>
+                    <tr><td>接管口径/螺纹尺寸</td><td>${threadDisplay}</td></tr>
+                    <tr><td>螺纹部材质/表面处理</td><td>${materialName}</td></tr>
+                    <tr><td>外螺纹密封方式</td><td>${sealTypeName}</td></tr>
+                </table>
+                <p class="note">此结果仅供参考，请以产品样本为准。</p>
+            `;
+        }
+
+        // 生成型号代码
+        function generateModelCode(connectorType, tubeSizeCode, connectionCode, material, sealType) {
+            return `${connectorType}${tubeSizeCode}-${connectionCode}${material}${sealType}`;
+        }
+    </script>
+</body>
+
+</html>    
